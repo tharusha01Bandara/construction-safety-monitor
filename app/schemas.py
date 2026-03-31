@@ -21,3 +21,20 @@ class PredictionResponse(BaseModel):
 
 class VisualizeResponse(PredictionResponse):
     output_image_path: str
+
+# --- TEMPORAL ANALYSIS RESPONSE MODELS ---
+class VideoWorkerAlert(BaseModel):
+    track_id: int
+    alert_type: str
+    frames: List[int]
+    message: str
+
+class VideoPredictionResponse(BaseModel):
+    video_status: str
+    frames_processed: int
+    persistent_scene_alert: bool
+    worker_alerts: List[VideoWorkerAlert]
+    summary_report: str
+
+class VideoVisualizeResponse(VideoPredictionResponse):
+    output_video_path: str

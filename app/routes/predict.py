@@ -1,12 +1,20 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException
-from ..schemas import PredictionResponse, VisualizeResponse
+from ..schemas import (
+    PredictionResponse, VisualizeResponse, 
+    VideoPredictionResponse, VideoVisualizeResponse
+)
 from ..services.detector import detector
 from ..services.safety_logic import apply_safety_rules
 from ..services.reporting import generate_alert_report
 from ..services.visualization import draw_visualizations
+from ..services.temporal_analysis import run_temporal_analysis, parse_detections
+from ..config import settings
 import numpy as np
 from PIL import Image
 import io
+import os
+import shutil
+import uuid
 
 router = APIRouter()
 
@@ -75,3 +83,48 @@ async def predict_visualize(file: UploadFile = File(...)):
         "alert_report": report,
         "output_image_path": output_path
     }
+
+# --- NEW TEMPORAL VIDEO ENDPOINTS ---
+
+async def save_temp_video(file: UploadFile) -> str:
+    """Helper to save uploaded video to a temp file on disk."""
+    if not file.content_type.startswith("video/"):
+        raise HTTPException(status_code=400, detail="Must be a video file")
+    
+    os.makedirs(settings.OUTPUT_DIR, exist_ok=True)
+    temp_path = os.path.join(settings.OUTPUT_DIR, f"temp_{uuid.uuid4().hex}.mp4")
+    
+    try:
+        with open(temp_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Could not save video file: {e}")
+        
+    return temp_path
+
+@router.post("/predict/video", response_model=VideoPredictionResponse)
+async def predict_video(file: UploadFile = File(...)):
+    temp_path = await save_temp_video(file)
+    
+    try:
+        result_dict, _ = run_temporal_analysis(temp_path, save_visuals=False)
+    finally:
+        # Cleanup
+        if os.path.exists(temp_path):
+            os.remove(temp_path)
+            
+    return result_dict
+
+@router.post("/predict/video/visualize", response_model=VideoVisualizeResponse)
+async def predict_video_visualize(file: UploadFile = File(...)):
+    temp_path = await save_temp_video(file)
+    
+    try:
+        result_dict, output_video_path = run_temporal_analysis(temp_path, save_visuals=True)
+        result_dict["output_video_path"] = output_video_path
+    finally:
+        # Cleanup
+        if os.path.exists(temp_path):
+            os.remove(temp_path)
+            
+    return result_dict

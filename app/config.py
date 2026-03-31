@@ -26,4 +26,12 @@ class Settings(BaseSettings):
     # Review threshold
     MANUAL_REVIEW_CONFIDENCE: float = 0.45
 
+    # --- TEMPORAL ANALYSIS CONFIG ---
+    VIDEO_FRAME_STRIDE: int = 5
+    WORKER_MATCH_IOU_THRESHOLD: float = 0.3
+    PERSISTENT_UNSAFE_WORKER_FRAMES: int = 3
+    PERSISTENT_UNSAFE_SCENE_FRAMES: int = 3
+    PERSISTENT_LOW_CONF_FRAMES: int = 3
+    OUTPUT_VIDEO_FPS: int = 5
+
 settings = Settings()
