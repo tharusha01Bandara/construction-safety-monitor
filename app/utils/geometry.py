@@ -1,26 +1,43 @@
-def calculate_iou(boxA, boxB):
-    # Determines the intersection over union
-    xA = max(boxA[0], boxB[0])
-    yA = max(boxA[1], boxB[1])
-    xB = min(boxA[2], boxB[2])
-    yB = min(boxA[3], boxB[3])
+def avg_conf(scores):
+    return sum(scores) / len(scores) if scores else 0.0
 
-    interArea = max(0, xB - xA) * max(0, yB - yA)
-    boxAArea = (boxA[2] - boxA[0]) * (boxA[3] - boxA[1])
-    boxBArea = (boxB[2] - boxB[0]) * (boxB[3] - boxB[1])
-    iou = interArea / float(boxAArea + boxBArea - interArea + 1e-6)
-    return iou
+def box_area(box):
+    x1, y1, x2, y2 = box
+    return max(0, x2 - x1) * max(0, y2 - y1)
 
-def is_inside(inner_box, outer_box):
-    # Checks if inner_box is significantly inside outer_box
-    xA = max(inner_box[0], outer_box[0])
-    yA = max(inner_box[1], outer_box[1])
-    xB = min(inner_box[2], outer_box[2])
-    yB = min(inner_box[3], outer_box[3])
-    
-    interArea = max(0, xB - xA) * max(0, yB - yA)
-    inner_area = (inner_box[2] - inner_box[0]) * (inner_box[3] - inner_box[1])
-    
+def intersection_area(boxA, boxB):
+    ax1, ay1, ax2, ay2 = boxA
+    bx1, by1, bx2, by2 = boxB
+
+    x1 = max(ax1, bx1)
+    y1 = max(ay1, by1)
+    x2 = min(ax2, bx2)
+    y2 = min(ay2, by2)
+
+    if x2 <= x1 or y2 <= y1:
+        return 0
+    return (x2 - x1) * (y2 - y1)
+
+def overlap_ratio(inner, outer):
+    inter = intersection_area(inner, outer)
+    inner_area = box_area(inner)
     if inner_area == 0:
-        return False
-    return (interArea / inner_area) > 0.5
+        return 0
+    return inter / inner_area
+
+def is_valid_person(box, min_area=12000):
+    x1, y1, x2, y2 = box
+    width = x2 - x1
+    height = y2 - y1
+    area = width * height
+    return area >= min_area and width >= 40 and height >= 80
+
+def helmet_belongs_to_person(helmet_box, person_box):
+    hx1, hy1, hx2, hy2 = helmet_box
+    px1, py1, px2, py2 = person_box
+
+    cx = (hx1 + hx2) / 2
+    cy = (hy1 + hy2) / 2
+
+    upper_limit = py1 + 0.35 * (py2 - py1)
+    return px1 <= cx <= px2 and py1 <= cy <= upper_limit

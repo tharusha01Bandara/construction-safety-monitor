@@ -17,6 +17,6 @@ class YOLOModel:
     def predict(self, image):
         if self.model is None:
             raise RuntimeError("Model is not loaded.")
-        return self.model(image)
+        return self.model(image, conf=settings.MODEL_PREDICT_CONF)
 
 detector = YOLOModel()
