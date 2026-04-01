@@ -1,13 +1,14 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException
 from ..schemas import (
     PredictionResponse, VisualizeResponse, 
-    VideoPredictionResponse, VideoVisualizeResponse
+    VideoPredictionResponse, VideoVisualizeResponse, ModelPerformanceResponse
 )
 from ..services.detector import detector
 from ..services.safety_logic import apply_safety_rules
 from ..services.reporting import generate_alert_report
 from ..services.visualization import draw_visualizations
 from ..services.temporal_analysis import run_temporal_analysis, parse_detections
+from ..services.model_evaluation import evaluate_model_performance
 from ..config import settings
 import numpy as np
 from PIL import Image
@@ -17,6 +18,11 @@ import shutil
 import uuid
 
 router = APIRouter()
+
+
+@router.get("/metrics/model", response_model=ModelPerformanceResponse)
+async def model_metrics(refresh: bool = False):
+    return evaluate_model_performance(refresh=refresh)
 
 def process_image(file: UploadFile):
     try:

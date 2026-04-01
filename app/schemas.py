@@ -38,3 +38,19 @@ class VideoPredictionResponse(BaseModel):
 
 class VideoVisualizeResponse(VideoPredictionResponse):
     output_video_path: str
+
+
+class ModelPerformanceResponse(BaseModel):
+    status: str
+    metrics_available: bool
+    source: str
+    model_path: str
+    dataset_yaml_path: str
+    split: str
+    precision: Optional[float]
+    recall: Optional[float]
+    mAP50: Optional[float]
+    mAP50_95: Optional[float]
+    fitness: Optional[float]
+    failure_cases: List[str]
+    notes: List[str]

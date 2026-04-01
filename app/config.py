@@ -34,4 +34,10 @@ class Settings(BaseSettings):
     PERSISTENT_LOW_CONF_FRAMES: int = 3
     OUTPUT_VIDEO_FPS: int = 5
 
+    # --- MODEL EVALUATION CONFIG
+    DATASET_YAML_PATH: str = "data.yaml"
+    EVAL_SPLIT: str = "val"
+    EVAL_IMAGE_SIZE: int = 640
+    EVAL_BATCH_SIZE: int = 8
+
 settings = Settings()
