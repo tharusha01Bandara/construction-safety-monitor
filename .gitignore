@@ -1,7 +1,7 @@
 __pycache__/
 *.pyc
-# outputs/
-models/*.pt
+ outputs/
+# models/*.pt
 !models/placeholder.txt
 venv/
 .env
