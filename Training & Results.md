@@ -161,7 +161,8 @@ Although larger models may provide higher accuracy, YOLOv8n was sufficient for t
 
 ---
 
-## 12. Screenshots (Proof)
+
+## 12. Screenshots (Proof)   Available in Training Results folder 
 
 ### 📸 Figure 1: Training Results Graph
 Include screenshot from:
