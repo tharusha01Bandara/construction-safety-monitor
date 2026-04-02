@@ -12,6 +12,9 @@ class WorkerResult(BaseModel):
     violations: List[str]
     confidence: float
     review_needed: bool
+    person_box: List[float] = []
+    helmet_box: Optional[List[float]] = None
+    vest_box: Optional[List[float]] = None
 
 class PredictionResponse(BaseModel):
     scene_status: str

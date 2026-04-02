@@ -80,8 +80,8 @@ async def predict_visualize(file: UploadFile = File(...)):
     workers, scene_status, scene_conf = apply_safety_rules(persons, helmets, vests)
     report = generate_alert_report(scene_status, scene_conf, workers)
     
-    output_path = draw_visualizations(image_np, workers, scene_status)
-    
+    output_path = draw_visualizations(image_np, workers, scene_status, scene_conf)
+
     return {
         "scene_status": scene_status,
         "scene_confidence": scene_conf,

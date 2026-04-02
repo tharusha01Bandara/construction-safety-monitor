@@ -59,6 +59,9 @@ def apply_safety_rules(persons, helmets, vests):
 
         helmet_conf = best_helmet_conf if has_helmet else None
         vest_conf = best_vest_conf if has_vest else None
+        
+        helmet_box = helmets[matched_helmet][0] if has_helmet else None
+        vest_box = vests[matched_vest][0] if has_vest else None
 
         if matched_helmet is not None:
             used_helmets.add(matched_helmet)
@@ -91,8 +94,10 @@ def apply_safety_rules(persons, helmets, vests):
             "person_conf": person_conf,
             "helmet": has_helmet,
             "helmet_conf": helmet_conf,
+            "helmet_box": helmet_box,
             "vest": has_vest,
             "vest_conf": vest_conf,
+            "vest_box": vest_box,
             "status": "safe" if safe else "unsafe",
             "violations": violations,
             "confidence": worker_confidence,
