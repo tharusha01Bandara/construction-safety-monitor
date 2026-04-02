@@ -52,6 +52,12 @@ class WorkerTracker:
                 matched_worker["track_id"] = track_id
                 self._update_track_state(track_id, matched_worker, frame_idx)
                 current_tracked_workers.append(matched_worker)
+            else:
+                # Track lost in this frame, reset consecutive safety counts
+                self.tracks[track_id]["consecutive_unsafe"] = 0
+                self.tracks[track_id]["consecutive_missing_helmet"] = 0
+                self.tracks[track_id]["consecutive_missing_vest"] = 0
+                self.tracks[track_id]["consecutive_low_conf"] = 0
                 
         # Register new workers
         for worker in unmatched_new:
@@ -202,10 +208,9 @@ def run_temporal_analysis(video_path: str, save_visuals: bool = False) -> Tuple[
             workers_out, scene_status, scene_conf = apply_safety_rules(persons, helmets, vests)
             
             worker_dicts = []
-            for i, w in enumerate(workers_out):
+            for w in workers_out:
                 wd = w.copy() if isinstance(w, dict) else w.dict()
-                if i < len(persons):
-                    wd["bbox"] = persons[i][0]
+                wd["bbox"] = wd["person_box"]
                 worker_dicts.append(wd)
 
             tracked_workers = tracker.update(worker_dicts, frame_idx)

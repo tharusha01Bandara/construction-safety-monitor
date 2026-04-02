@@ -2,6 +2,24 @@
 
 A FastAPI-based application for detecting construction safety compliance (helmets, vests) using YOLOv8.
 
+## 🔄 Consistency Between Colab and FastAPI
+
+The same model and safety logic were implemented in both Google Colab and the FastAPI-based application.
+
+* The trained YOLOv8 model (`best.pt`) is used in both environments
+* The same detection thresholds and filtering logic are applied
+* The same PPE safety rules are enforced
+* Visualization outputs (bounding boxes, labels, confidence scores , alert report) are consistent
+
+This ensures:
+
+* reproducibility of results
+* consistent predictions across environments
+* smooth transition from experimentation (Colab) to deployment (FastAPI)
+
+Both implementations produce similar outputs for the same input images.
+
+
 ## Overview
 This system processes input images, detects workers and their PPE (helmets and high-visibility vests) using a trained YOLOv8 model, applies safety logic, and returns a detailed JSON response or an annotated image.
 
@@ -11,11 +29,6 @@ This system processes input images, detects workers and their PPE (helmets and h
 - **Rule 3**: If one is missing, that worker is unsafe.
 - **Rule 4**: If any worker is unsafe, the whole scene is unsafe.
 
-### Edge-Case Handling & Confidence Scoring
-- **Confidence Scoring**: Worker confidence is calculated as the average of their person detection confidence and matched PPE confidences. Scene confidence is the average across all workers.
-- **Review Flagger**: If the average confidence of a worker's prediction falls below `0.6` (configurable), they are flagged as `review_needed = true`.
-- **Tiny False Positives**: Small person boxes (area < 1000 px) are ignored as false positives or people too far to reasonably check.
-- **Spatial Matching**: Helmets and vests are matched by checking if their bounding boxes are physically inside a person box (Intersection over Area logic).
 
 ## Setup & Installation
 
@@ -87,7 +100,4 @@ The endpoint reports:
 - `EVAL_IMAGE_SIZE` (default: `640`)
 - `EVAL_BATCH_SIZE` (default: `8`)
 
-## Limitations
-- Performance depends highly on the quality of `best.pt`.
-- Crowded scenes may have overlapping boxes causing mismatched PPE. (Can be improved with IoU-based bipartite matching).
-- Performance metrics can be misleading if validation data does not match real camera angles, weather, lighting, and PPE styles.
+

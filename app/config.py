@@ -9,7 +9,7 @@ class Settings(BaseSettings):
 
     # Confidence Thresholds
     PERSON_CONF_THRESHOLD: float = 0.40
-    HELMET_CONF_THRESHOLD: float = 0.20
+    HELMET_CONF_THRESHOLD: float = 0.25
     VEST_CONF_THRESHOLD: float = 0.10
 
     # Person dimension filtering
